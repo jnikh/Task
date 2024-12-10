@@ -55,10 +55,25 @@ const App = () => {
 
   //Table columns Configuration 
   const columns = [
-    
-  ]
+    {title:'Task ID', field:'id', editor:flase},
+    {title:'Title', field:'title' , editor: 'input'},
+    {title: 'Description', field:'description' , editor:'input'},
+    {
+      title: 'Status',
+      field: 'status',
+      editor: 'select',
+      editorParams: {valuse: ['To Do','In Progress','Done']}
+    },
+    {
+      title:'Actions',
+      formatter: 'buttonCross',
+      width: 100,
+      align: 'center',
+      cellClick : (e, cell) => deletTask(cell),
+    }
+  ];
 
-  
+  const filteredTasks = statusFilter ? task.filter(task=>{task.status === statusFilter}) : task;
 
   return (
     <div>
