@@ -156,7 +156,7 @@ const App = () => {
           </button>
         </div>
 
-        {/* Search and Filter Section */}
+        
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <input
             type="text"
@@ -177,7 +177,7 @@ const App = () => {
           </select>
         </div>
 
-        {/* Task Table */}
+        
         <div className="overflow-x-auto shadow-md rounded-lg border border-gray-200">
           <ReactTabulator
             data={filteredTasks}
