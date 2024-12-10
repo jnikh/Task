@@ -8,7 +8,9 @@ import axios from 'axios';
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
@@ -26,6 +28,7 @@ const App = () => {
           status: task.completed ? 'Done' : 'To Do',
         }));
         setTasks(formattedTasks);
+        setFilteredTasks(formattedTasks);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -46,23 +49,50 @@ const App = () => {
       status: newTask.status,
     };
 
-    setTasks([...tasks, taskToAdd]);
+    const updatedTasks = [...tasks, taskToAdd];
+    setTasks(updatedTasks);
+    setFilteredTasks(updatedTasks);
     setNewTask({ title: '', description: '', status: 'To Do' });
     toast.success('Task added successfully!');
   };
 
   const deleteTask = (row) => {
     const taskId = row.getData().id;
-    setTasks(tasks.filter(task => task.id !== taskId));
+    const updatedTasks = tasks.filter(task => task.id !== taskId);
+    setTasks(updatedTasks);
+    setFilteredTasks(updatedTasks);
     toast.info('Task deleted successfully!');
   };
 
   const updateTask = (cell) => {
     const updatedTask = cell.getData();
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
-    );
+    const updatedTasks = tasks.map(task => (task.id === updatedTask.id ? updatedTask : task));
+    setTasks(updatedTasks);
+    setFilteredTasks(updatedTasks);
     toast.success('Task updated successfully!');
+  };
+
+  const handleSearch = (event) => {
+    const term = event.target.value.toLowerCase();
+    setSearchTerm(term);
+
+    const filtered = tasks.filter(
+      task =>
+        task.title.toLowerCase().includes(term) ||
+        task.description.toLowerCase().includes(term)
+    );
+    setFilteredTasks(filtered);
+  };
+
+  const handleStatusFilter = (status) => {
+    setStatusFilter(status);
+    const filtered = tasks.filter(task => !status || task.status === status);
+    const finalFilteredTasks = filtered.filter(
+      task =>
+        task.title.toLowerCase().includes(searchTerm) ||
+        task.description.toLowerCase().includes(searchTerm)
+    );
+    setFilteredTasks(finalFilteredTasks);
   };
 
   const columns = [
@@ -83,14 +113,10 @@ const App = () => {
     },
   ];
 
-  const filteredTasks = statusFilter
-    ? tasks.filter(task => task.status === statusFilter)
-    : tasks;
-
   return (
     <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 min-h-screen p-8">
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-6">Task List Manager</h1>
         
@@ -130,14 +156,21 @@ const App = () => {
           </button>
         </div>
 
-        {/* Filter Section */}
-        <div className="flex justify-between items-center mb-6">
+        {/* Search and Filter Section */}
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <input
+            type="text"
+            placeholder="Search by Title or Description"
+            value={searchTerm}
+            onChange={handleSearch}
+            className="w-full sm:w-2/3 border border-gray-300 rounded py-2 px-3 focus:ring-2 focus:ring-blue-500"
+          />
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => handleStatusFilter(e.target.value)}
             className="w-full sm:w-1/3 border border-gray-300 rounded py-2 px-3 focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">All</option>
+            <option value="">All Status</option>
             <option value="To Do">To Do</option>
             <option value="In Progress">In Progress</option>
             <option value="Done">Done</option>
