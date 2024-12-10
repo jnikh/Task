@@ -27,6 +27,39 @@ const App = () => {
       }
       fetchData()
   },[])
+ 
+  // add new task 
+  const addTask = ()=>{
+    const newTask ={
+      id: task.length +1,
+      title:'New Task',
+      desription : 'New Task Description',
+      status: 'To Do'
+    };
+    setTask([...task , newTask])
+  }
+
+  //delete a task 
+  const deletTask = (row) =>{
+   const taskId = row.getData().id;
+   setTask(task.filter(task => task.id !== taskId))
+  };
+
+  //update a task 
+  const updateTask = (cell) =>{
+    const updateTask = cell.getData();
+    setTask((prevTask)=> 
+       prevTask.map((task)=> (task.id === updateTask.id ? updateTask : task))
+    )
+  };
+
+  //Table columns Configuration 
+  const columns = [
+    
+  ]
+
+  
+
   return (
     <div>
        
